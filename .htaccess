@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /www/htdocs/w0141447/api-v3/api.cgi/$1 [L]
