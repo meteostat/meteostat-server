@@ -2,6 +2,8 @@
 
 The Meteostat server allows everyone to run a local instance of the Meteostat JSON API. The server provides different endpoints which return historical weather data and meta information in JSON format.
 
+**Important:** This package is work in progress. Do not use it in production.
+
 ## Installation
 
 The Meteostat server package is available through [PyPI](https://pypi.org/project/meteostat-server/):
