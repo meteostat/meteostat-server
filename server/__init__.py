@@ -5,6 +5,9 @@ Official Meteostat JSON API
 The code is licensed under the MIT license.
 """
 
+__appname__ = 'meteostat-server'
+__version__ = '0.0.1'
+
 from flask import Flask
 
 # Create Flask app instance
