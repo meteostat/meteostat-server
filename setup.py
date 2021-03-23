@@ -15,7 +15,7 @@ with open(path.join(here, 'README.md')) as f:
 # Setup
 setup(
     name='meteostat-server',
-    version='0.0.1',
+    version='0.0.2',
     author='Meteostat',
     author_email='info@meteostat.net',
     description='Run a Meteostat JSON API server anywhere.',
