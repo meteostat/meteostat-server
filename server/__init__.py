@@ -6,7 +6,7 @@ The code is licensed under the MIT license.
 """
 
 __appname__ = 'server'
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 from flask import Flask
 
@@ -14,7 +14,7 @@ from flask import Flask
 app = Flask(__name__)
 
 # Import API endpoints
-import .point_hourly
-import .point_daily
-import .station_hourly
-import .station_daily
+from .point_hourly import *
+from .point_daily import *
+from .station_hourly import *
+from .station_daily import *
