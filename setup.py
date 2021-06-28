@@ -15,7 +15,7 @@ with open(path.join(here, 'README.md')) as f:
 # Setup
 setup(
     name='meteostat-server',
-    version='0.0.4',
+    version='0.0.5',
     author='Meteostat',
     author_email='info@meteostat.net',
     description='Run a Meteostat JSON API server anywhere.',
@@ -26,7 +26,7 @@ setup(
     python_requires='>=3.5.0',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['flask', 'meteostat'],
+    install_requires=['flask', 'meteostat==1.5.1'],
     license='MIT',
     classifiers=[
         'Programming Language :: Python :: 3',

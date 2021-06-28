@@ -1,6 +1,6 @@
 
 """
-Official Meteostat JSON API
+Official Meteostat JSON API Server
 
 The code is licensed under the MIT license.
 """

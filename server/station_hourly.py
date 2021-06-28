@@ -12,13 +12,13 @@ from datetime import datetime
 import json
 from meteostat import Hourly
 
-@app.route('/station/daily')
+@app.route('/stations/hourly')
 def stations_hourly():
     station = str(request.args.get('station'))
     start = datetime.strptime(request.args.get('start'), '%Y-%m-%d')
-    end = datetime.strptime(request.args.get('end'), '%Y-%m-%d')
+    end = datetime.strptime(f'{request.args.get("end")} 23:59:59', '%Y-%m-%d %H:%M:%S')
 
-    data = Hourly(station, start, end)
+    data = Hourly(station, start, end).normalize()
     df = data.fetch()
 
     result = df.to_json(orient="records")
