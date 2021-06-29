@@ -52,6 +52,12 @@ If you're receiving internal server errors when accessing endpoints, please chec
 sudo chmod -R 777 /var/www/
 ```
 
+Also, after making changes to the Python code or pulling the latest state, you'll probably need to restart Apache for the changes to become effective:
+
+```sh
+/etc/init.d/apache2 restart
+```
+
 ## Data License
 
 Meteorological data is provided under the terms of the [Creative Commons Attribution-NonCommercial 4.0 International Public License (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/legalcode). You may build upon the material

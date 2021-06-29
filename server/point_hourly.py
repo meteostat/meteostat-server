@@ -4,11 +4,18 @@ Meteostat JSON API Server
 The code is licensed under the MIT license.
 """
 
+import warnings
 from server import app, utils
 from flask import Response, abort
 from datetime import datetime
 import json
 from meteostat import Point, Hourly
+
+
+"""
+General configuration
+"""
+warnings.filterwarnings('ignore')
 
 """
 Meteostat configuration
