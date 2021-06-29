@@ -1,8 +1,6 @@
 """
 Meteostat JSON API Server
 
-API endpoint for retrieving hourly point data in JSON format.
-
 The code is licensed under the MIT license.
 """
 
@@ -12,7 +10,31 @@ from datetime import datetime
 import json
 from meteostat import Point, Hourly
 
+"""
+Meteostat configuration
+"""
 Point.radius = None
+Hourly.threads = 4
+
+"""
+Endpoint configuration
+"""
+# Query parameters
+parameters = [
+    ('lat', float, None),
+    ('lon', float, None),
+    ('alt', int, None),
+    ('start', str, None),
+    ('end', str, None),
+    ('tz', str, None),
+    ('model', bool, True),
+    ('freq', str, None),
+    ('units', str, None)
+]
+
+# Maximum number of days per request
+max_days = 30
+
 
 @app.route('/point/hourly')
 def point_hourly():
@@ -21,47 +43,57 @@ def point_hourly():
     """
 
     # Get query parameters
-    lat = float(utils.arg('lat')) if utils.arg('lat') else None
-    lon = float(utils.arg('lon')) if utils.arg('lon') else None
-    alt = float(utils.arg('alt')) if utils.arg('alt') else None
-    start = str(utils.arg('start')) if utils.arg('start') else None
-    end = str(utils.arg('end')) if utils.arg('end') else None
-    timezone = str(utils.arg('tz')) if utils.arg('timezone') else None
-    model = bool(utils.arg('model')) if utils.arg('model') else True
-    freq = str(utils.arg('freq')) if utils.arg('freq') else None
-    units = str(utils.arg('units')) if utils.arg('units') else None
+    args = utils.get_parameters(parameters)
 
     # Check if required parameters are set
-    if lat and lon and len(start) == 10 and len(end) == 10:
+    if args['lat'] and args['lon'] and len(
+            args['start']) == 10 and len(args['end']) == 10:
 
         # Convert start & end date strings to datetime
-        start = datetime.strptime(start, '%Y-%m-%d')
-        end = datetime.strptime(f'{end} 23:59:59', '%Y-%m-%d %H:%M:%S')
+        start = datetime.strptime(args['start'], '%Y-%m-%d')
+        end = datetime.strptime(f'{args["end"]} 23:59:59', '%Y-%m-%d %H:%M:%S')
 
         # Get number of days between start and end date
         date_diff = (end - start).days
 
         # Check date range
-        if date_diff < 0 or date_diff  > 30:
-            abort(401)
+        if date_diff < 0 or date_diff > max_days:
+            # Bad request
+            abort(400)
 
         # Create a point
-        location = Point(lat, lon, alt)
+        location = Point(args['lat'], args['lon'], args['alt'])
 
         # Get data
         data = Hourly(location, start, end)
-        data = data.fetch()
 
-        # DateTime Index to String
-        data.index = data.index.strftime('%Y-%m-%d %H:%M:%S')
+        # Check if any data
+        if data.count() > 0:
+
+            # Fetch DataFrame
+            data = data.fetch()
+
+            # DateTime Index to String
+            data.index = data.index.strftime('%Y-%m-%d %H:%M:%S')
+            data = data.reset_index().to_json(orient="records")
+
+        else:
+
+            # No data
+            data = '[]'
 
         # Inject meta data
-        result = f'''{{
-            "meta": {{
-                "stations": {location.stations.to_list()}
-            }},
-            "data": {data.reset_index().to_json(orient="records")}
-        }}'''
+        meta = {}
+        meta['generated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        meta['stations'] = location.stations.to_list()
+
+        # Generate output string
+        output = f'''{{"meta":{json.dumps(meta)},"data":{data}}}'''
 
         # Return
-        return Response(result, mimetype='application/json')
+        return Response(output, mimetype='application/json')
+
+    else:
+
+        # Bad request
+        abort(400)

@@ -1,8 +1,14 @@
 from flask import request
 
-def arg(name: str):
+def get_parameters(parameters: list):
     """
-    Get request parameter by name
+    Get request parameters
     """
 
-    return request.args.get(name)
+    args = {}
+
+    for parameter in parameters:
+        value = request.args.get(parameter[0])
+        args[parameter[0]] = parameter[1](value) if value else parameter[2]
+
+    return args
