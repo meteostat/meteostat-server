@@ -1,3 +1,9 @@
+"""
+Meteostat JSON API Server
+
+The code is licensed under the MIT license.
+"""
+
 from flask import request
 
 def get_parameters(parameters: list):

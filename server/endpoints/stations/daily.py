@@ -15,6 +15,7 @@ from server import app, utils
 Meteostat configuration
 """
 Daily.max_age = 60 * 60 * 48
+Daily.autoclean = False
 
 """
 Endpoint configuration

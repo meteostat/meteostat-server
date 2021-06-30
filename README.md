@@ -19,6 +19,8 @@ cd meteostat-server
 python3 -m pip install . -U
 ```
 
+Before you can start serving JSON data, make sure to place a customized `config.ini` file in the `~/.meteostat-server` directory. You can use `config.example.ini` in the root of this repository as a template.
+
 Finally, you can run a local test server using:
 
 ```sh

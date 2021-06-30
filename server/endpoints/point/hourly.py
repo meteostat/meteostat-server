@@ -17,6 +17,7 @@ Meteostat configuration
 Point.radius = 120000
 Hourly.max_age = 60 * 60 * 3
 Hourly.threads = 4
+Hourly.autoclean = False
 
 """
 Endpoint configuration

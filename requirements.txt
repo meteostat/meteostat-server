@@ -1,0 +1,7 @@
+flask
+meteostat==1.5.3
+configparser
+sqlalchemy
+mysql-connector-python
+pylint
+autopep8

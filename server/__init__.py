@@ -6,7 +6,7 @@ The code is licensed under the MIT license.
 """
 
 __appname__ = 'server'
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 
 import os
 from configparser import ConfigParser
@@ -15,9 +15,12 @@ from flask import Flask, request
 # Create Flask app instance
 app = Flask(__name__)
 
+# Path of configuration file
+config_path: str = os.path.expanduser(
+    '~') + os.sep + '.meteostat-server' + os.sep + 'config.ini'
+
 # Get configuration
 config = ConfigParser()
-config_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'config.ini'))
 config.read(config_path)
 
 # Check secret header
