@@ -4,24 +4,19 @@ Meteostat JSON API Server
 The code is licensed under the MIT license.
 """
 
-import warnings
-from server import app, utils
-from flask import Response, abort
 from datetime import datetime
 import json
-from meteostat import Point, Hourly
+from flask import Response, abort
+from meteostat import Point, Daily
+from server import app, utils
 
-
-"""
-General configuration
-"""
-warnings.filterwarnings('ignore')
 
 """
 Meteostat configuration
 """
-Point.radius = None
-Hourly.threads = 4
+Point.radius = 120000
+Daily.max_age = 60 * 60 * 48
+Daily.threads = 4
 
 """
 Endpoint configuration
@@ -33,20 +28,19 @@ parameters = [
     ('alt', int, None),
     ('start', str, None),
     ('end', str, None),
-    ('tz', str, None),
     ('model', bool, True),
     ('freq', str, None),
     ('units', str, None)
 ]
 
 # Maximum number of days per request
-max_days = 30
+max_days = 365 * 10
 
 
-@app.route('/point/hourly')
-def point_hourly():
+@app.route('/point/daily')
+def point_daily():
     """
-    Return hourly point data in JSON format
+    Return daily point data in JSON format
     """
 
     # Get query parameters
@@ -72,7 +66,7 @@ def point_hourly():
         location = Point(args['lat'], args['lon'], args['alt'])
 
         # Get data
-        data = Hourly(location, start, end)
+        data = Daily(location, start, end, model=args['model'])
 
         # Check if any data
         if data.count() > 0:
@@ -81,7 +75,8 @@ def point_hourly():
             data = data.fetch()
 
             # DateTime Index to String
-            data.index = data.index.strftime('%Y-%m-%d %H:%M:%S')
+            data.index = data.index.strftime('%Y-%m-%d')
+            data.index.rename('date', inplace=True)
             data = data.reset_index().to_json(orient="records")
 
         else:
