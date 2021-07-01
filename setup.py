@@ -26,7 +26,13 @@ setup(
     python_requires='>=3.5.0',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['flask', 'meteostat==1.5.5'],
+    install_requires=[
+        'flask',
+        'meteostat==1.5.5',
+        'configparser',
+        'sqlalchemy',
+        'mysql-connector-python'
+    ],
     license='MIT',
     classifiers=[
         'Programming Language :: Python :: 3',
