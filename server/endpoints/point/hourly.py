@@ -6,16 +6,17 @@ The code is licensed under the MIT license.
 
 from datetime import datetime
 import json
-from flask import Response, abort
-from meteostat import Point, Hourly
+from flask import abort
+from meteostat import Point, Hourly, units
 from server import app, utils
 
 
 """
 Meteostat configuration
 """
+cache_time = 60 * 60 * 3
 Point.radius = 120000
-Hourly.max_age = 60 * 60 * 3
+Hourly.max_age = cache_time
 Hourly.threads = 4
 Hourly.autoclean = False
 
@@ -73,10 +74,24 @@ def point_hourly():
         # Check if any data
         if data.count() > 0:
 
+            # Normalize data
+            data = data.normalize()
+
+            # Aggregate
+            if args['freq']:
+                data = data.aggregate(args['freq'])
+
+            # Unit conversion
+            if args['units'] == 'imperial':
+                data = data.convert(units.imperial)
+            elif args['units'] == 'scientific':
+                data = data.convert(units.scientific)
+
             # Fetch DataFrame
             data = data.fetch()
 
-            # Convert condition code to integer
+            # Convert to integer
+            data['tsun'] = data['tsun'].astype('Int64')
             data['coco'] = data['coco'].astype('Int64')
 
             # DateTime Index to String
@@ -97,7 +112,7 @@ def point_hourly():
         output = f'''{{"meta":{json.dumps(meta)},"data":{data}}}'''
 
         # Return
-        return Response(output, mimetype='application/json')
+        return utils.send_response(output, cache_time)
 
     else:
 

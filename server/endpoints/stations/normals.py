@@ -7,16 +7,16 @@ The code is licensed under the MIT license.
 from datetime import datetime
 import json
 from flask import abort
-from meteostat import Hourly, units
+from meteostat import Normals, units
 from server import app, utils
 
 
 """
 Meteostat configuration
 """
-cache_time = 60 * 60 * 3
-Hourly.max_age = cache_time
-Hourly.autoclean = False
+cache_time = 60 * 60 * 24 * 30
+Normals.max_age = cache_time
+Normals.autoclean = False
 
 """
 Endpoint configuration
@@ -24,54 +24,46 @@ Endpoint configuration
 # Query parameters
 parameters = [
     ('station', str, None),
-    ('start', str, None),
-    ('end', str, None),
-    ('tz', str, None),
-    ('model', bool, True),
-    ('freq', str, None),
+    ('start', int, None),
+    ('end', int, None),
     ('units', str, None)
 ]
 
-# Maximum number of days per request
-max_days = 30
 
-
-@app.route('/stations/hourly')
-def stations_hourly():
+@app.route('/stations/normals')
+def stations_normals():
     """
-    Return hourly station data in JSON format
+    Return station normals data in JSON format
     """
 
     # Get query parameters
     args = utils.get_parameters(parameters)
 
     # Check if required parameters are set
-    if args['station'] and len(args['start']) == 10 and len(args['end']) == 10:
-
-        # Convert start & end date strings to datetime
-        start = datetime.strptime(args['start'], '%Y-%m-%d')
-        end = datetime.strptime(f'{args["end"]} 23:59:59', '%Y-%m-%d %H:%M:%S')
-
-        # Get number of days between start and end date
-        date_diff = (end - start).days
-
-        # Check date range
-        if date_diff < 0 or date_diff > max_days:
-            # Bad request
-            abort(400)
+    if args['station']:
 
         # Get data
-        data = Hourly(args['station'], start, end, timezone=args['tz'], model=args['model'])
+        if args['start'] and args['end']:
+
+            # Get number of years between start and end year
+            year_diff = args['end'] - args['start']
+
+            # Check date range
+            if year_diff < 0:
+                # Bad request
+                abort(400)
+
+            data = Normals(args['station'], args['start'], args['end'])
+
+        else:
+
+            data = Normals(args['station'])
 
         # Check if any data
         if data.count() > 0:
 
             # Normalize data
             data = data.normalize()
-
-            # Aggregate
-            if args['freq']:
-                data = data.aggregate(args['freq'])
 
             # Unit conversion
             if args['units'] == 'imperial':
@@ -82,12 +74,7 @@ def stations_hourly():
             # Fetch DataFrame
             data = data.fetch()
 
-            # Convert to integer
-            data['tsun'] = data['tsun'].astype('Int64')
-            data['coco'] = data['coco'].astype('Int64')
-
-            # DateTime Index to String
-            data.index = data.index.strftime('%Y-%m-%d %H:%M:%S')
+            # To JSON
             data = data.reset_index().to_json(orient="records")
 
         else:

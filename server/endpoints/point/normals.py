@@ -7,18 +7,18 @@ The code is licensed under the MIT license.
 from datetime import datetime
 import json
 from flask import abort
-from meteostat import Point, Daily, units
+from meteostat import Point, Normals, units
 from server import app, utils
 
 
 """
 Meteostat configuration
 """
-cache_time = 60 * 60 * 48
+cache_time = 60 * 60 * 24 * 30
 Point.radius = 120000
-Daily.max_age = cache_time
-Daily.threads = 4
-Daily.autoclean = False
+Normals.max_age = cache_time
+Normals.threads = 4
+Normals.autoclean = False
 
 """
 Endpoint configuration
@@ -28,57 +28,49 @@ parameters = [
     ('lat', float, None),
     ('lon', float, None),
     ('alt', int, None),
-    ('start', str, None),
-    ('end', str, None),
-    ('model', bool, True),
-    ('freq', str, None),
+    ('start', int, None),
+    ('end', int, None),
     ('units', str, None)
 ]
 
-# Maximum number of days per request
-max_days = 365 * 10
 
-
-@app.route('/point/daily')
-def point_daily():
+@app.route('/point/normals')
+def point_normals():
     """
-    Return daily point data in JSON format
+    Return point normals data in JSON format
     """
 
     # Get query parameters
     args = utils.get_parameters(parameters)
 
     # Check if required parameters are set
-    if args['lat'] and args['lon'] and len(
-            args['start']) == 10 and len(args['end']) == 10:
-
-        # Convert start & end date strings to datetime
-        start = datetime.strptime(args['start'], '%Y-%m-%d')
-        end = datetime.strptime(f'{args["end"]} 23:59:59', '%Y-%m-%d %H:%M:%S')
-
-        # Get number of days between start and end date
-        date_diff = (end - start).days
-
-        # Check date range
-        if date_diff < 0 or date_diff > max_days:
-            # Bad request
-            abort(400)
+    if args['lat'] and args['lon']:
 
         # Create a point
         location = Point(args['lat'], args['lon'], args['alt'])
 
         # Get data
-        data = Daily(location, start, end, model=args['model'])
+        if args['start'] and args['end']:
+
+            # Get number of years between start and end year
+            year_diff = args['end'] - args['start']
+
+            # Check date range
+            if year_diff < 0:
+                # Bad request
+                abort(400)
+
+            data = Normals(location, args['start'], args['end'])
+
+        else:
+
+            data = Normals(location)
 
         # Check if any data
         if data.count() > 0:
 
             # Normalize data
             data = data.normalize()
-
-            # Aggregate
-            if args['freq']:
-                data = data.aggregate(args['freq'])
 
             # Unit conversion
             if args['units'] == 'imperial':
@@ -92,9 +84,7 @@ def point_daily():
             # Convert to integer
             data['tsun'] = data['tsun'].astype('Int64')
 
-            # DateTime Index to String
-            data.index = data.index.strftime('%Y-%m-%d')
-            data.index.rename('date', inplace=True)
+            # To JSON
             data = data.reset_index().to_json(orient="records")
 
         else:

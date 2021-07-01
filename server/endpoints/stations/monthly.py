@@ -7,27 +7,23 @@ The code is licensed under the MIT license.
 from datetime import datetime
 import json
 from flask import abort
-from meteostat import Point, Daily, units
+from meteostat import Monthly, units
 from server import app, utils
 
 
 """
 Meteostat configuration
 """
-cache_time = 60 * 60 * 48
-Point.radius = 120000
-Daily.max_age = cache_time
-Daily.threads = 4
-Daily.autoclean = False
+cache_time = 60 * 60 * 24 * 30
+Monthly.max_age = cache_time
+Monthly.autoclean = False
 
 """
 Endpoint configuration
 """
 # Query parameters
 parameters = [
-    ('lat', float, None),
-    ('lon', float, None),
-    ('alt', int, None),
+    ('station', str, None),
     ('start', str, None),
     ('end', str, None),
     ('model', bool, True),
@@ -39,18 +35,17 @@ parameters = [
 max_days = 365 * 10
 
 
-@app.route('/point/daily')
-def point_daily():
+@app.route('/stations/monthly')
+def stations_monthly():
     """
-    Return daily point data in JSON format
+    Return monthly station data in JSON format
     """
 
     # Get query parameters
     args = utils.get_parameters(parameters)
 
     # Check if required parameters are set
-    if args['lat'] and args['lon'] and len(
-            args['start']) == 10 and len(args['end']) == 10:
+    if args['station'] and len(args['start']) == 10 and len(args['end']) == 10:
 
         # Convert start & end date strings to datetime
         start = datetime.strptime(args['start'], '%Y-%m-%d')
@@ -60,15 +55,12 @@ def point_daily():
         date_diff = (end - start).days
 
         # Check date range
-        if date_diff < 0 or date_diff > max_days:
+        if date_diff < 0:
             # Bad request
             abort(400)
 
-        # Create a point
-        location = Point(args['lat'], args['lon'], args['alt'])
-
         # Get data
-        data = Daily(location, start, end, model=args['model'])
+        data = Monthly(args['station'], start, end, model=args['model'])
 
         # Check if any data
         if data.count() > 0:
@@ -105,7 +97,6 @@ def point_daily():
         # Inject meta data
         meta = {}
         meta['generated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        meta['stations'] = location.stations.to_list()
 
         # Generate output string
         output = f'''{{"meta":{json.dumps(meta)},"data":{data}}}'''

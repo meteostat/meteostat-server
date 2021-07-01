@@ -6,15 +6,16 @@ The code is licensed under the MIT license.
 
 from datetime import datetime
 import json
-from flask import Response, abort
-from meteostat import Daily
+from flask import abort
+from meteostat import Daily, units
 from server import app, utils
 
 
 """
 Meteostat configuration
 """
-Daily.max_age = 60 * 60 * 48
+cache_time = 60 * 60 * 48
+Daily.max_age = cache_time
 Daily.autoclean = False
 
 """
@@ -64,11 +65,27 @@ def stations_daily():
         # Check if any data
         if data.count() > 0:
 
+            # Normalize data
+            data = data.normalize()
+
+            # Aggregate
+            if args['freq']:
+                data = data.aggregate(args['freq'])
+
+            # Unit conversion
+            if args['units'] == 'imperial':
+                data = data.convert(units.imperial)
+            elif args['units'] == 'scientific':
+                data = data.convert(units.scientific)
+
             # Fetch DataFrame
             data = data.fetch()
 
+            # Convert to integer
+            data['tsun'] = data['tsun'].astype('Int64')
+
             # DateTime Index to String
-            data.index = data.index.strftime('%Y-%m-%d %H:%M:%S')
+            data.index = data.index.strftime('%Y-%m-%d')
             data.index.rename('date', inplace=True)
             data = data.reset_index().to_json(orient="records")
 
@@ -85,7 +102,7 @@ def stations_daily():
         output = f'''{{"meta":{json.dumps(meta)},"data":{data}}}'''
 
         # Return
-        return Response(output, mimetype='application/json')
+        return utils.send_response(output, cache_time)
 
     else:
 

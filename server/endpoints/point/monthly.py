@@ -7,18 +7,18 @@ The code is licensed under the MIT license.
 from datetime import datetime
 import json
 from flask import abort
-from meteostat import Point, Daily, units
+from meteostat import Point, Monthly, units
 from server import app, utils
 
 
 """
 Meteostat configuration
 """
-cache_time = 60 * 60 * 48
+cache_time = 60 * 60 * 24 * 30
 Point.radius = 120000
-Daily.max_age = cache_time
-Daily.threads = 4
-Daily.autoclean = False
+Monthly.max_age = cache_time
+Monthly.threads = 4
+Monthly.autoclean = False
 
 """
 Endpoint configuration
@@ -35,14 +35,11 @@ parameters = [
     ('units', str, None)
 ]
 
-# Maximum number of days per request
-max_days = 365 * 10
 
-
-@app.route('/point/daily')
-def point_daily():
+@app.route('/point/monthly')
+def point_monthly():
     """
-    Return daily point data in JSON format
+    Return monthly point data in JSON format
     """
 
     # Get query parameters
@@ -60,7 +57,7 @@ def point_daily():
         date_diff = (end - start).days
 
         # Check date range
-        if date_diff < 0 or date_diff > max_days:
+        if date_diff < 0:
             # Bad request
             abort(400)
 
@@ -68,7 +65,7 @@ def point_daily():
         location = Point(args['lat'], args['lon'], args['alt'])
 
         # Get data
-        data = Daily(location, start, end, model=args['model'])
+        data = Monthly(location, start, end, model=args['model'])
 
         # Check if any data
         if data.count() > 0:
