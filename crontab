@@ -1,1 +1,2 @@
 5 4 * * * python3 -W ignore ~/meteostat-server/tasks/clean.py
+5 5 * * * python3 -W ignore ~/meteostat-server/tasks/db_import.py
