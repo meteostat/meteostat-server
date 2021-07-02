@@ -143,56 +143,62 @@ def stations_meta():
             'icao': args['icao']
         })
 
-        # Fetch result
-        data = query.fetchone()
+        if query.rowcount > 0:
 
-        # Create dict of names
-        try:
-            names = json.loads(data['name_alt'])
-        except BaseException:
-            names = {}
-        names['en'] = data['name']
+            # Fetch result
+            data = query.fetchone()
 
-        # Create JSON output
-        output = json.dumps({
-            'id': data['id'],
-            'name': names,
-            'country': data['country'],
-            'region': data['region'],
-            'identifier': {
-                'national': data['national_id'],
-                'wmo': data['wmo'],
-                'icao': data['icao']
-            },
-            'location': {
-                'latitude': data['latitude'],
-                'longitude': data['longitude'],
-                'elevation': data['altitude']
-            },
-            'timezone': data['timezone'],
-            'inventory': {
-                'model': {
-                    'start': data['model_start'].strftime('%Y-%m-%d'),
-                    'end': data['model_end'].strftime('%Y-%m-%d')
+            # Create dict of names
+            try:
+                names = json.loads(data['name_alt'])
+            except BaseException:
+                names = {}
+            names['en'] = data['name']
+
+            # Create JSON output
+            output = json.dumps({
+                'id': data['id'],
+                'name': names,
+                'country': data['country'],
+                'region': data['region'],
+                'identifier': {
+                    'national': data['national_id'],
+                    'wmo': data['wmo'],
+                    'icao': data['icao']
                 },
-                'hourly': {
-                    'start': data['hourly_start'].strftime('%Y-%m-%d'),
-                    'end': data['hourly_end'].strftime('%Y-%m-%d')
+                'location': {
+                    'latitude': data['latitude'],
+                    'longitude': data['longitude'],
+                    'elevation': data['altitude']
                 },
-                'daily': {
-                    'start': data['daily_start'].strftime('%Y-%m-%d'),
-                    'end': data['daily_end'].strftime('%Y-%m-%d')
-                },
-                'monthly': {
-                    'start': data['monthly_start'],
-                    'end': data['monthly_end']
-                },
-                'normals': {
-                    'start': data['normals_start'],
-                    'end': data['normals_end']
+                'timezone': data['timezone'],
+                'inventory': {
+                    'model': {
+                        'start': data['model_start'].strftime('%Y-%m-%d'),
+                        'end': data['model_end'].strftime('%Y-%m-%d')
+                    },
+                    'hourly': {
+                        'start': data['hourly_start'].strftime('%Y-%m-%d'),
+                        'end': data['hourly_end'].strftime('%Y-%m-%d')
+                    },
+                    'daily': {
+                        'start': data['daily_start'].strftime('%Y-%m-%d'),
+                        'end': data['daily_end'].strftime('%Y-%m-%d')
+                    },
+                    'monthly': {
+                        'start': data['monthly_start'],
+                        'end': data['monthly_end']
+                    },
+                    'normals': {
+                        'start': data['normals_start'],
+                        'end': data['normals_end']
+                    }
                 }
-            }
-        })
+            })
+
+        else:
+
+            output = '[]'
 
         # Inject meta data
         meta = {}

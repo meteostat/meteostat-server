@@ -131,31 +131,37 @@ def stations_nearby():
             'limit': args['limit']
         })
 
-        # Fetch results
-        results = query.fetchall()
+        if query.rowcount > 0:
 
-        # Output list
-        output = []
+            # Fetch results
+            results = query.fetchall()
 
-        # Go through stations
-        for data in results:
+            # Output list
+            output = []
 
-            # Create dict of names
-            try:
-                names = json.loads(data['name_alt'])
-            except BaseException:
-                names = {}
-            names['en'] = data['name']
+            # Go through stations
+            for data in results:
 
-            # Create JSON output
-            output.append({
-                'id': data['id'],
-                'name': names,
-                'distance': data['distance']
-            })
+                # Create dict of names
+                try:
+                    names = json.loads(data['name_alt'])
+                except BaseException:
+                    names = {}
+                names['en'] = data['name']
 
-        # Stringify output
-        output = json.dumps(output)
+                # Create JSON output
+                output.append({
+                    'id': data['id'],
+                    'name': names,
+                    'distance': data['distance']
+                })
+
+            # Stringify output
+            output = json.dumps(output)
+
+        else:
+
+            output = '[]'
 
         # Inject meta data
         meta = {}
