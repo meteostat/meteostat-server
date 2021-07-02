@@ -198,7 +198,7 @@ def stations_meta():
 
         else:
 
-            output = '[]'
+            output = 'null'
 
         # Inject meta data
         meta = {}
