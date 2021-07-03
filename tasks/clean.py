@@ -13,14 +13,17 @@ Daily.cache_dir = cache_dir
 Monthly.cache_dir = cache_dir
 Normals.cache_dir = cache_dir
 
+# Max. cache time
+max_cache_time = 60 * 60 * 24 * 30
+
 # Clear hourly cache
-Hourly.clear_cache(60 * 60 * 3)
+Hourly.clear_cache(max_cache_time)
 
 # Clear daily cache
-Daily.clear_cache(60 * 60 * 48)
+Daily.clear_cache(max_cache_time)
 
 # Clear monthly cache
-Monthly.clear_cache(60 * 60 * 24 * 30)
+Monthly.clear_cache(max_cache_time)
 
 # Clear normals cache
-Normals.clear_cache(60 * 60 * 24 * 30)
+Normals.clear_cache(max_cache_time)
