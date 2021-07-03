@@ -46,62 +46,69 @@ def point_normals():
     # Check if required parameters are set
     if args['lat'] and args['lon']:
 
-        # Create a point
-        location = Point(args['lat'], args['lon'], args['alt'])
+        try:
 
-        # Get data
-        if args['start'] and args['end']:
+            # Create a point
+            location = Point(args['lat'], args['lon'], args['alt'])
 
-            # Get number of years between start and end year
-            year_diff = args['end'] - args['start']
+            # Get data
+            if args['start'] and args['end']:
 
-            # Check date range
-            if year_diff < 0:
-                # Bad request
-                abort(400)
+                # Get number of years between start and end year
+                year_diff = args['end'] - args['start']
 
-            data = Normals(location, args['start'], args['end'])
+                # Check date range
+                if year_diff < 0:
+                    # Bad request
+                    abort(400)
 
-        else:
+                data = Normals(location, args['start'], args['end'])
 
-            data = Normals(location)
+            else:
 
-        # Check if any data
-        if data.count() > 0:
+                data = Normals(location)
 
-            # Normalize data
-            data = data.normalize()
+            # Check if any data
+            if data.count() > 0:
 
-            # Unit conversion
-            if args['units'] == 'imperial':
-                data = data.convert(units.imperial)
-            elif args['units'] == 'scientific':
-                data = data.convert(units.scientific)
+                # Normalize data
+                data = data.normalize()
 
-            # Fetch DataFrame
-            data = data.fetch()
+                # Unit conversion
+                if args['units'] == 'imperial':
+                    data = data.convert(units.imperial)
+                elif args['units'] == 'scientific':
+                    data = data.convert(units.scientific)
 
-            # Convert to integer
-            data['tsun'] = data['tsun'].astype('Int64')
+                # Fetch DataFrame
+                data = data.fetch()
 
-            # To JSON
-            data = data.reset_index().to_json(orient="records")
+                # Convert to integer
+                data['tsun'] = data['tsun'].astype('Int64')
 
-        else:
+                # To JSON
+                data = data.reset_index().to_json(orient="records")
 
-            # No data
-            data = '[]'
+            else:
 
-        # Inject meta data
-        meta = {}
-        meta['generated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        meta['stations'] = location.stations.to_list()
+                # No data
+                data = '[]'
 
-        # Generate output string
-        output = f'''{{"meta":{json.dumps(meta)},"data":{data}}}'''
+            # Inject meta data
+            meta = {}
+            meta['generated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            meta['stations'] = location.stations.to_list()
 
-        # Return
-        return utils.send_response(output, cache_time)
+            # Generate output string
+            output = f'''{{"meta":{json.dumps(meta)},"data":{data}}}'''
+
+            # Return
+            return utils.send_response(output, cache_time)
+
+        except BaseException:
+
+            # Bad request
+            abort(400)
 
     else:
 
