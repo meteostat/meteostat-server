@@ -1,4 +1,3 @@
-
 """
 Official Meteostat JSON API Server
 
@@ -28,6 +27,11 @@ def secret():
     if request.headers.get(name) != value:
         # Unauthorized
         abort(401)
+
+@app.after_request
+def poweredby(resp):
+    resp.headers['X-Powered-By'] = f'meteostat-{config.get("server", "name")}'
+    return resp
 
 # Import API endpoints
 from .endpoints.stations.meta import *
