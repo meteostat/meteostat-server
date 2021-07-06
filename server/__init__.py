@@ -30,7 +30,7 @@ def secret():
 
 @app.after_request
 def poweredby(resp):
-    resp.headers['X-Powered-By'] = f'meteostat-{config.get("server", "name")}'
+    resp.headers['X-Meteostat-Server'] = config.get("server", "name")
     return resp
 
 # Import API endpoints
