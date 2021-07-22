@@ -5,10 +5,14 @@ The code is licensed under the MIT license.
 """
 
 __appname__ = 'server'
-__version__ = '0.0.8'
+__version__ = '0.0.9'
 
+import warnings
 from flask import Flask, request
 from .utils import get_config
+
+# Ignore warnings
+warnings.filterwarnings('ignore')
 
 # Create Flask app instance
 app = Flask(__name__)
