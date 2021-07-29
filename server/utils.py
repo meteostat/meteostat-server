@@ -47,7 +47,7 @@ def get_parameters(parameters: list):
 
     for parameter in parameters:
         value = request.args.get(parameter[0])
-        if value == '0' or value == 'false':
+        if parameter[1] == bool and (value == '0' or value == 'false'):
             value = False
         args[parameter[0]] = parameter[1](value) if value != None else parameter[2]
 
