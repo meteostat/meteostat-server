@@ -84,7 +84,7 @@ def point_normals():
                 data = data.fetch()
 
                 # Convert to integer
-                data['tsun'] = data['tsun'].astype('Int64')
+                data['tsun'] = data['tsun'].round().astype('Int64')
 
                 # To JSON
                 data = data.reset_index().to_json(orient="records")
