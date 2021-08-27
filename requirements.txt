@@ -1,5 +1,5 @@
 flask
-meteostat==1.5.9
+meteostat==1.5.10
 configparser
 sqlalchemy
 mysql-connector-python
