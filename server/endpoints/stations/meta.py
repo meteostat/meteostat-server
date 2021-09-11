@@ -176,16 +176,16 @@ def stations_meta():
                     'timezone': data['timezone'],
                     'inventory': {
                         'model': {
-                            'start': data['model_start'].strftime('%Y-%m-%d'),
-                            'end': data['model_end'].strftime('%Y-%m-%d')
+                            'start': data['model_start'].strftime('%Y-%m-%d') if data['model_start'] is not None else None,
+                            'end': data['model_end'].strftime('%Y-%m-%d') if data['model_end'] is not None else None
                         },
                         'hourly': {
-                            'start': data['hourly_start'].strftime('%Y-%m-%d'),
-                            'end': data['hourly_end'].strftime('%Y-%m-%d')
+                            'start': data['hourly_start'].strftime('%Y-%m-%d') if data['hourly_start'] is not None else None,
+                            'end': data['hourly_end'].strftime('%Y-%m-%d') if data['hourly_end'] is not None else None
                         },
                         'daily': {
-                            'start': data['daily_start'].strftime('%Y-%m-%d'),
-                            'end': data['daily_end'].strftime('%Y-%m-%d')
+                            'start': data['daily_start'].strftime('%Y-%m-%d') if data['daily_start'] is not None else None,
+                            'end': data['daily_end'].strftime('%Y-%m-%d') if data['daily_end'] is not None else None
                         },
                         'monthly': {
                             'start': data['monthly_start'],
