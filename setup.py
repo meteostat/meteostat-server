@@ -28,7 +28,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'flask',
-        'meteostat==1.5.10',
+        'meteostat==1.6.1',
         'configparser',
         'sqlalchemy',
         'mysql-connector-python'
