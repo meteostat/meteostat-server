@@ -62,12 +62,10 @@ def stations_daily():
             # Caching
             now_diff = (datetime.now() - end).days
 
-            if now_diff < 7:
+            if now_diff < 30:
                 cache_time = 60 * 60 * 24
-            elif now_diff < 90:
-                cache_time = 60 * 60 * 24 * 3
             else:
-                cache_time = 60 * 60 * 24 * 30
+                cache_time = 60 * 60 * 24 * 3
 
             Daily.max_age = cache_time
 

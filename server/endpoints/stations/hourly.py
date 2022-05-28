@@ -64,11 +64,11 @@ def stations_hourly():
             now_diff = (datetime.now() - end).days
 
             if now_diff < 3:
-                cache_time = 60 * 60 * 3
+                cache_time = 60 * 60
             elif now_diff < 30:
                 cache_time = 60 * 60 * 24
             else:
-                cache_time = 60 * 60 * 24 * 30
+                cache_time = 60 * 60 * 24 * 3
 
             Hourly.max_age = cache_time
 

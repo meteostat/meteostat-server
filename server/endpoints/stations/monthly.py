@@ -60,14 +60,7 @@ def stations_monthly():
                 abort(400)
 
             # Caching
-            now_diff = (datetime.now() - end).days
-
-            if now_diff < 90:
-                cache_time = 60 * 60 * 24 * 7
-            else:
-                cache_time = 60 * 60 * 24 * 30
-
-            Monthly.max_age = cache_time
+            Monthly.max_age = 60 * 60 * 24 * 7
 
             # Get data
             data = Monthly(args['station'], start, end, model=args['model'])
