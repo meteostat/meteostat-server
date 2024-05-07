@@ -37,7 +37,7 @@ def stations_nearby():
     args = utils.get_parameters(parameters)
 
     # Check if required parameters are set
-    if args['lat'] and args['lon']:
+    if 'lat' in args and 'lon' in args:
 
         try:
 

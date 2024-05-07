@@ -48,7 +48,7 @@ def point_hourly():
     args = utils.get_parameters(parameters)
 
     # Check if required parameters are set
-    if args['lat'] and args['lon'] and len(
+    if 'lat' in args and 'lon' in args and len(
             args['start']) == 10 and len(args['end']) == 10:
 
         try:
