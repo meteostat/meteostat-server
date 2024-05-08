@@ -23,7 +23,7 @@ setup(
         'meteostat==1.6.3',
         'configparser',
         'sqlalchemy==1.4',
-        'mysql-connector-python==8.0.6'
+        'mysql-connector-python==8.0.14'  # Requires Python 3.7, latest version compatible with Python 3.6 (8.0.6), has a severe security issue
     ],
     license='MIT',
     classifiers=[
