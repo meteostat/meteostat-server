@@ -143,6 +143,8 @@ def stations_nearby():
 
                 # Go through stations
                 for data in results:
+                    
+                    data = data._mapping
 
                     # Create dict of names
                     try:

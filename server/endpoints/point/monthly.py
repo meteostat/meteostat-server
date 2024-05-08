@@ -17,6 +17,7 @@ Meteostat configuration
 Point.radius = 120000
 Monthly.threads = 4
 Monthly.autoclean = False
+cache_time = 60 * 60 * 24
 
 """
 Endpoint configuration

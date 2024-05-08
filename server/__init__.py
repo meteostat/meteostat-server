@@ -5,7 +5,7 @@ The code is licensed under the MIT license.
 """
 
 __appname__ = 'server'
-__version__ = '0.0.13'
+__version__ = '0.0.14'
 
 import warnings
 from flask import Flask, request

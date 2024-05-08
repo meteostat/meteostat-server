@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 # Setup
 setup(
     name='meteostat-server',
-    version='0.0.13',
+    version='0.0.14',
     author='Meteostat',
     author_email='info@meteostat.net',
     description='Run a Meteostat JSON API server anywhere.',

@@ -15,6 +15,7 @@ from server import app, utils
 Meteostat configuration
 """
 Monthly.autoclean = False
+cache_time = 60 * 60 * 24
 
 """
 Endpoint configuration
