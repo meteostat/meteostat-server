@@ -22,8 +22,8 @@ setup(
         'flask',
         'meteostat==1.6.3',
         'configparser',
-        'sqlalchemy==1.3',
-        'mysql-connector-python'
+        'sqlalchemy==1.4',
+        'mysql-connector-python==8.0.6'
     ],
     license='MIT',
     classifiers=[
