@@ -23,7 +23,7 @@ setup(
         'meteostat==1.6.3',
         'configparser',
         'sqlalchemy==1.4',
-        'mysql-connector-python==8.0.6'
+        'mysql-connector-python==8.0.14'
     ],
     license='MIT',
     classifiers=[
