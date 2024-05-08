@@ -148,7 +148,7 @@ def stations_meta():
             if query.rowcount > 0:
 
                 # Fetch result
-                data = query.fetchone()._mapping
+                data = query.fetchone()
 
                 # Create dict of names
                 try:

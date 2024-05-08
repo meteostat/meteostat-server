@@ -9,20 +9,20 @@ from setuptools import setup, find_packages
 # Setup
 setup(
     name='meteostat-server',
-    version='0.0.14',
+    version='0.0.15',
     author='Meteostat',
     author_email='info@meteostat.net',
     description='Run a Meteostat JSON API server anywhere.',
     url='https://github.com/meteostat/meteostat-server',
     keywords=['weather', 'climate', 'data', 'timeseries', 'meteorology', 'json', 'api'],
-    python_requires='>=3.5.0',
+    python_requires='>=3.6.0',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
         'flask',
         'meteostat==1.6.3',
         'configparser',
-        'sqlalchemy',
+        'sqlalchemy==1.3',
         'mysql-connector-python'
     ],
     license='MIT',
